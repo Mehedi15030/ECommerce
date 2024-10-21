@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Payment methods",
+  "FriendlyName": "New payment",
+  "SystemName": " New Payments.Manual",
+  "Version": "4.70.3",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "nopCommerce team",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.New Payments.Manual.dll",
+  "Description": "This plugin enables new  payment (stored into database)"
+}

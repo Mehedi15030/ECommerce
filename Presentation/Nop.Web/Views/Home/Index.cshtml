@@ -1,0 +1,118 @@
+﻿@using Nop.Services.Localization
+@using Nop.Core
+@inject ILocalizationService localizationService
+@inject IStoreContext storeContext
+
+
+
+@{
+    Layout = "_ColumnsOne";
+
+    var homepageTitle = await localizationService.GetLocalizedAsync(await storeContext.GetCurrentStoreAsync(), s => s.HomepageTitle);
+
+    //title
+    if (!string.IsNullOrEmpty(homepageTitle))
+    {
+        NopHtml.AddTitleParts(homepageTitle);
+    }
+
+    var homepageDescription = await localizationService.GetLocalizedAsync(await storeContext.GetCurrentStoreAsync(), s => s.HomepageDescription);
+
+    //meta
+    if (!string.IsNullOrEmpty(homepageDescription))
+    {
+        NopHtml.AddMetaDescriptionParts(homepageDescription);
+    }
+
+    //page class
+    NopHtml.AppendPageCssClassParts("html-home-page");
+}
+
+
+
+
+<div class="page home-page">
+   
+    <div class="page-body">
+      
+
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageTop })
+        @await Component.InvokeAsync(typeof(TopicBlockViewComponent), new { systemName = "HomepageText" })
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeCategories })
+        @await Component.InvokeAsync(typeof(HomepageCategoriesViewComponent))
+       
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeProducts })
+        @await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeBestSellers })
+        @await Component.InvokeAsync(typeof(HomepageBestSellersViewComponent))
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeNews })
+        @await Component.InvokeAsync(typeof(HomepageNewsViewComponent))
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforePoll })
+        @await Component.InvokeAsync(typeof(HomepagePollsViewComponent))
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBottom })
+    </div>
+    
+   
+</div>
+
+@*script>
+    let page = 1;
+    let loading = false;
+
+    $(window).on('scroll', function () {
+        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100 && !loading) {
+            loading = true;
+            $('#loading').show();
+
+           $.get('/Content/LoadMore', { page: page + 1 }, function (data) {
+              $('#itemsContainer').append(data);
+               page++;
+                loading = false;
+               $('#loading').hide();
+            }).fail(function () {
+                loading = false;
+                $('#loading').hide();
+                //alert('Error loading more items.');
+            });
+        }
+    });
+
+</script>*@
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div id="loading" style="display: none;">Loading...</div>
+
+<div id="error" style="display: none; color: red;"></div>
+
+<script>
+    let page = 1;
+    let loading = false;
+
+    function loadMoreItems() {
+        if (loading) return;
+
+        loading = true;
+        $('#loading').show();
+        $('#error').hide();
+
+        $.get('/Content/LoadMore', { page: page + 1 })
+            .done(function (data) {
+                $('#itemsContainer').append(data);
+                page++;
+            })
+            .fail(function () {
+                $('#error').show();
+            })
+            .always(function () {
+                loading = false;
+                $('#loading').hide();
+            });
+    }
+
+    $(window).on('scroll', function () {
+        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+            loadMoreItems();
+        }
+    });
+
+</script>
